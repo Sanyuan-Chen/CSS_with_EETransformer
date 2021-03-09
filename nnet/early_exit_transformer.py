@@ -28,7 +28,7 @@ class RelativePositionalEncoding(torch.nn.Module):
 class PositionwiseFeedForward(torch.nn.Module):
     """Positionwise feed forward
 
-    :param int idim: input dimenstion
+    :param int idim: input dimension
     :param int hidden_units: number of hidden units
     :param float dropout_rate: dropout rate
     """
@@ -75,8 +75,7 @@ class MultiHeadedAttention(nn.Module):
         :param torch.Tensor key: (batch, time2, size)
         :param torch.Tensor value: (batch, time2, size)
         :param torch.Tensor mask: (batch, time1, time2)
-        :param torch.nn.Dropout dropout:
-        :return torch.Tensor: attentined and transformed `value` (batch, time1, d_model)
+        :return torch.Tensor: attentioned and transformed `value` (batch, time1, d_model)
              weighted by the query dot key attention (batch, head, time1, time2)
         """
         n_batch = query.size(0)
@@ -128,7 +127,7 @@ class EncoderLayer(nn.Module):
     """
 
     def __init__(self, size, self_attn, feed_forward, dropout_rate,
-                 normalize_before=True, concat_after=False, relative_v=False, attention_heads=8):
+                 normalize_before=True, concat_after=False, attention_heads=8):
         """Construct an EncoderLayer object."""
         super(EncoderLayer, self).__init__()
         self.self_attn = self_attn
@@ -136,8 +135,6 @@ class EncoderLayer(nn.Module):
         self.norm1 = torch.nn.LayerNorm(size, eps=1e-12)
         self.norm2 = torch.nn.LayerNorm(size, eps=1e-12)
         self.norm_k = torch.nn.LayerNorm(size//attention_heads, eps=1e-12)
-        if relative_v:
-            self.norm_v = torch.nn.LayerNorm(size//attention_heads, eps=1e-12)
         self.dropout = nn.Dropout(dropout_rate)
         self.size = size
         self.normalize_before = normalize_before
@@ -206,7 +203,6 @@ class EETransformerEncoder(torch.nn.Module):
                  relative_pos_emb=True,
                  normalize_before=True,
                  concat_after=False,
-                 relative_v=False,
                  exit_classifiers=None):
         super(EETransformerEncoder, self).__init__()
 
@@ -218,7 +214,7 @@ class EETransformerEncoder(torch.nn.Module):
         )
 
         if relative_pos_emb:
-            self.pos_emb = RelativePositionalEncoding(attention_dim // attention_heads, 1000, relative_v)
+            self.pos_emb = RelativePositionalEncoding(attention_dim // attention_heads, 1000)
         else:
             self.pos_emb = None
 
@@ -229,7 +225,6 @@ class EETransformerEncoder(torch.nn.Module):
                 dropout_rate,
                 normalize_before,
                 concat_after,
-                relative_v,
                 attention_heads
             ) for _ in range(num_blocks)])
 
@@ -240,13 +235,6 @@ class EETransformerEncoder(torch.nn.Module):
         self.inference_exit_layers = []
 
     def forward(self, xs, masks, early_exit_threshold=0):
-        """Embed positions in tensor.
-
-        :param torch.Tensor xs: input tensor
-        :param torch.Tensor masks: input mask
-        :return: position embedded tensor and mask
-        :rtype Tuple[torch.Tensor, torch.Tensor]:
-        """
         xs = self.embed(xs)
 
         if self.pos_emb is not None:
@@ -286,7 +274,6 @@ class EETransformerEncoder(torch.nn.Module):
                     last_predicts = predicts
             results = [last_predicts]
             self.inference_exit_layers.append(calculated_layer_num)
-            print('calculated_layer_num: ', calculated_layer_num)
         return results, masks
 
 
@@ -301,7 +288,6 @@ default_encoder_conf = {
     "relative_pos_emb": True,
     "normalize_before": True,
     "concat_after": False,
-    "relative_v": False
 }
 
 
