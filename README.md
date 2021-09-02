@@ -42,10 +42,12 @@ python 3.6.9, torch 1.7.1
 ## Citation
 If you find our work useful, please cite [our paper](https://arxiv.org/abs/2010.12180):
 ```bibtex
-@article{CSS_with_EETransformer,
-  title={Don't shoot butterfly with rifles: Multi-channel Continuous Speech Separation with Early Exit Transformer},
-  author={Chen, Sanyuan and Wu, Yu and Chen, Zhuo and Yoshioka, Takuya and Liu, Shujie and Li, Jinyu},
-  journal={arXiv preprint arXiv:2010.12180},
-  year={2020}
+@inproceedings{CSS_with_EETransformer,
+  title={Don’t shoot butterfly with rifles: Multi-channel continuous speech separation with early exit transformer},
+  author={Chen, Sanyuan and Wu, Yu and Chen, Zhuo and Yoshioka, Takuya and Liu, Shujie and Li, Jinyu and Yu, Xiangzhan},
+  booktitle={ICASSP 2021-2021 IEEE International Conference on Acoustics, Speech and Signal Processing (ICASSP)},
+  pages={6139--6143},
+  year={2021},
+  organization={IEEE}
 }
 ```
